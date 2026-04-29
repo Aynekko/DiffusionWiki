@@ -6,7 +6,7 @@
 [
 	message(string) : "Map Description / Title"
 	skyname(string) : "environment map (cl_skyname)"
-	sounds(integer) : "CD track to play" : 1
+	sounds(integer) : "CD track to play"
 	light(integer) : "Default light level"
 	WaveHeight(string) : "Default Wave Height"
 	MaxRange(string) : "Max viewable distance" : "4096"
@@ -3654,7 +3654,7 @@
 	[
 		1 : "Remove on fire" : 0
 	]
-	iuser2(integer) : "Field size (4-255)" : "25"
+	iuser2(integer) : "Field size (4-100)" : "25"
 	target(target_destination) : "Activate on success"
 	fuser1(integer) : "Move target block every ... seconds (0.5-10.0)" : 1.0
 	master(target_destination) : "Master" 
@@ -5159,7 +5159,13 @@
 		64 : "Start Inactive" : 0
 	]
 ]
-@PointClass base(Monster, Sequence) size(-16 -16 0, 16 16 36) studio("models/w_squeak.mdl") = monster_snark : "Armed Snark" []
+@PointClass base(Monster, Sequence) size(-16 -16 0, 16 16 36) studio("models/npc/spidermine.mdl") = monster_spidermine : "Armed Mine"
+[
+	spawnflags(Flags) =
+	[
+		1: "Start Inactive" : 0
+	]
+]
 @PointClass color(0 200 200) base(Targetname, Global, Parent) iconsprite("sprites/EnvTarget.spr") size(-16 -16 -16, 16 16 16) = monster_target : "Target for monsters to attack"
 [
 	frags(choices) : "Behave as" : 0 =

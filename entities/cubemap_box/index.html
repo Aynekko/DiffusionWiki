@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>cubemap_box - Diffusion Wiki</title>
+        <title>Cubemap box - Diffusion Wiki</title>
         <link href="../../css/bootstrap.min.css" rel="stylesheet">
         <link href="../../css/fontawesome.min.css" rel="stylesheet">
         <link href="../../css/brands.min.css" rel="stylesheet">
@@ -40,11 +40,22 @@
                             <li class="nav-item">
                                 <a href="../../about/" class="nav-link">About</a>
                             </li>
-                            <li class="nav-item">
-                                <a href="../%21ents/" class="nav-link">Entities</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../../mapping/mapping/" class="nav-link">Mapping</a>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Mapping</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../../mapping/mapping/" class="dropdown-item">Setup</a>
+</li>
+                                    
+<li>
+    <a href="../%21ents/" class="dropdown-item">Entities</a>
+</li>
+                                    
+<li>
+    <a href="../../mapping/example_maps/" class="dropdown-item">Example maps</a>
+</li>
+                                </ul>
                             </li>
                         </ul>
 
@@ -72,7 +83,27 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-bs-level="1"><a href="#cubemap_box" class="nav-link">cubemap_box</a>
+            <li class="nav-item" data-bs-level="1"><a href="#creating-the-entity" class="nav-link">Creating the entity</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#entity-parameters" class="nav-link">Entity parameters</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#applying-a-cubemap-to-brush-faces" class="nav-link">Applying a cubemap to brush faces</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#building-cubemaps" class="nav-link">Building cubemaps</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#optimizing-disk-space" class="nav-link">Optimizing disk space</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -81,8 +112,43 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="cubemap_box">cubemap_box</h1>
-<p>For full documentation visit <a href="https://www.mkdocs.org">mkdocs.org</a>.</p></div>
+<p>Diffusion features parallax-corrected cubemaps. To place one, create a brush entity named <strong>cubemap_box</strong>.  </p>
+<h1 id="creating-the-entity">Creating the entity</h1>
+<p>You can create it both with origin-brush and without.<br />
+Origin-brush (a brush with <strong>ORIGIN</strong> texture) represents a view point, where a cubemap would photograph the world from, in game.<br />
+Without the origin-brush, center of the cubemap_box entity will be used.  </p>
+<div class="admonition danger">
+<p class="admonition-title">Important:</p>
+<p>When making <strong>cubemap_box</strong> with an origin-brush, it is crucial to select the origin-brush first, then the cubemap brush itself, and only then press <strong>Tie to entity</strong>.
+This is related to how brushes are being written into a map file. If you select the origin-brush last, the correct origin won't be saved.</p>
+</div>
+<p>Texture that is applied to a cubemap brush is not important, but for the sake of visibility I use <strong>TOOLSCUBEMAP</strong> texture in diffusion.wad.  </p>
+<h1 id="entity-parameters">Entity parameters</h1>
+<ul>
+<li><code>cubemapsize</code> - deprecated, does nothing. By default, the cubemap is created in the best quality already.</li>
+<li><code>rendermode</code> - <strong>editor only</strong>. Sets the brush to transparent mode in the editor, for better visiblity.</li>
+<li><code>renderamt</code> - <strong>editor only</strong>. The amount of brush transparency in the editor, for better visibility.</li>
+</ul>
+<h1 id="applying-a-cubemap-to-brush-faces">Applying a cubemap to brush faces</h1>
+<p>The logic is very simple - if a brush face, particularly a <strong>center of a surface after map compilation</strong> is inside of the cubemap volume, this surface will receive this cubemap.<br />
+If a surface is inside multiple cubemap volumes, the smallest cubemap volume will be used. Same logic applies for models, but it's worth to note that models choose their cubemaps using their entity origin.<br />
+Example: a house in the middle of a field. Placing one huge cubemap around the map will apply this cubemap to everything - both inside and outside walls of the house, and the field. Now place smaller cubemaps inside the house to replace the outside cubemap with the internal ones.  </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The texture material file must have the parameter <code>ReflectScale</code> (0.0 - 1.0) for a cubemap to work. You can also adjust cubemap quality using lower resolution mip level of the cubemap image, by using <code>ReflectLod</code> (0 - highest quality. The higher the number, the worse the quality).</p>
+</div>
+<h1 id="building-cubemaps">Building cubemaps</h1>
+<ul>
+<li>Load the map in game.</li>
+<li>Enable cheats using <code>sv_cheats 1</code></li>
+<li>Disable culling for certain models and brushes by typing <code>sv_cubemap_culling 1</code></li>
+<li>Type <code>buildcubemaps</code> and wait for the cubemaps to build (left bottom corner of the screen)</li>
+<li>When done with cubemap building, revert <code>sv_cubemap_culling</code> back to 0.</li>
+</ul>
+<h1 id="optimizing-disk-space">Optimizing disk space</h1>
+<p>By default, each cubemap is saved as 6 TGA files, which can take a lot of disk space as well as GPU memory.<br />
+It is recommended to convert them to a single DDS file, which can be easily done using <a href="https://github.com/Aynekko/Xash3D-DDS-cubemap-converter">Xash3D DDS cubemap creator</a> - an automated tool that I created for personal use.<br />
+Once DDS files are created, you can delete all TGA files. Now each cubemap will take only 1 Mb of space.</p></div>
             </div>
         </div>
 
